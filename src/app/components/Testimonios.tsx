@@ -8,10 +8,10 @@ import AnimatedBackground from './AnimatedBackground';
 export default function Testimonios() {
   const testimonials = [
     {
-      name: "Martín Rodríguez",
-      role: "CEO, TechStart",
-      initials: "MR",
-      text: "Increíble trabajo. La landing que nos hicieron duplicó nuestras conversiones en el primer mes. Súper profesionales y atentos a cada detalle.",
+      name: "Paola Galante",
+      role: "Abogada",
+      initials: "PG",
+      text: "Increíble trabajo. La landing que nos hicieron mejoró la visibilidad de mi estudio jurídico. Súper profesionales y atentos a cada detalle.",
       color: "cyan",
       gradient: "from-cyan-400 to-blue-600"
     },
@@ -31,13 +31,6 @@ export default function Testimonios() {
       color: "emerald",
       gradient: "from-emerald-400 to-green-600"
     }
-  ];
-
-  const stats = [
-    { value: "100%", label: "Clientes satisfechos" },
-    { value: "50+", label: "Proyectos entregados" },
-    { value: "5+", label: "Años de experiencia" },
-    { value: "24/7", label: "Soporte disponible" }
   ];
 
   return (
@@ -95,32 +88,6 @@ export default function Testimonios() {
           ))}
         </div>
 
-        {/* Stats bar */}
-        <motion.div
-          initial={{ opacity: 0, y: 50 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, margin: "-50px" }}
-          transition={{ duration: 0.8 }}
-          className="mt-24 grid grid-cols-2 md:grid-cols-4 gap-8"
-        >
-          {stats.map((stat, index) => (
-            <motion.div
-              key={index}
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ delay: index * 0.1 }}
-              whileHover={{ y: -5 }}
-              className="text-center p-6 rounded-2xl bg-white/5 border border-white/10 hover:border-white/20 hover:bg-white/10 transition-colors duration-300"
-            >
-              <div className="text-4xl font-bold text-white mb-2 bg-gradient-to-r from-cyan-400 to-purple-500 bg-clip-text text-transparent">
-                {stat.value}
-              </div>
-              <p className="text-white/60 text-sm">{stat.label}</p>
-            </motion.div>
-          ))}
-        </motion.div>
-
       </div>
     </section>
   );
@@ -160,6 +127,19 @@ function TestimonialCard({ testimonial, index }: { testimonial: any, index: numb
     emerald: "border-emerald-500/30 hover:border-emerald-500/60 shadow-emerald-500/10 hover:shadow-emerald-500/30",
   }[testimonial.color as string];
 
+  // Clases de color completas para que Tailwind las reconozca
+  const quoteColorClass = {
+    cyan: "text-cyan-400",
+    purple: "text-purple-400",
+    emerald: "text-emerald-400",
+  }[testimonial.color as string];
+
+  const starColorClass = {
+    cyan: "fill-cyan-400 text-cyan-400",
+    purple: "fill-purple-400 text-purple-400",
+    emerald: "fill-emerald-400 text-emerald-400",
+  }[testimonial.color as string];
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 30 }}
@@ -178,7 +158,7 @@ function TestimonialCard({ testimonial, index }: { testimonial: any, index: numb
         <div className={`absolute inset-0 rounded-3xl opacity-0 group-hover:opacity-20 transition duration-500 bg-gradient-to-br ${testimonial.gradient}`} />
 
         <div className="relative z-10" style={{ transform: "translateZ(20px)" }}>
-          <Quote className={`w-10 h-10 text-${testimonial.color}-400 mb-6 group-hover:scale-110 group-hover:rotate-6 transition-all duration-300`} />
+          <Quote className={`w-10 h-10 ${quoteColorClass} mb-6 group-hover:scale-110 group-hover:rotate-6 transition-all duration-300`} />
 
           {/* Stars */}
           <div className="flex gap-1 mb-6">
@@ -190,9 +170,7 @@ function TestimonialCard({ testimonial, index }: { testimonial: any, index: numb
                 viewport={{ once: true }}
                 transition={{ delay: 0.2 + (i * 0.1), duration: 0.4 }}
               >
-                <Star
-                  className={`w-4 h-4 fill-${testimonial.color}-400 text-${testimonial.color}-400`}
-                />
+                <Star className={`w-4 h-4 ${starColorClass}`} />
               </motion.div>
             ))}
           </div>

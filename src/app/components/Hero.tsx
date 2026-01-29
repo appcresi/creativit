@@ -109,7 +109,7 @@ export default function Hero() {
             >
               <div className="space-y-1">
                 <div className="text-2xl md:text-3xl font-bold bg-gradient-to-r from-cyan-400 to-cyan-600 bg-clip-text text-transparent flex">
-                  <Counter from={0} to={50} suffix="+" />
+                  <Counter from={0} to={10} suffix="+" />
                 </div>
                 <p className="text-sm text-gray-400">Proyectos</p>
               </div>
@@ -121,7 +121,7 @@ export default function Hero() {
               </div>
               <div className="space-y-1">
                 <div className="text-2xl md:text-3xl font-bold bg-gradient-to-r from-purple-400 to-purple-600 bg-clip-text text-transparent flex">
-                  <Counter from={0} to={5} suffix="+ años" />
+                  <Counter from={0} to={3} suffix="+ años" />
                 </div>
                 <p className="text-sm text-gray-400">Experiencia</p>
               </div>
@@ -175,14 +175,7 @@ export default function Hero() {
         </div>
       </div>
 
-      {/* Bottom info */}
-      <div className="absolute bottom-8 left-0 right-0 z-10">
-        <div className="max-w-7xl mx-auto px-6 lg:px-8 flex justify-between items-center text-sm text-gray-500">
-          <span>Synera Team</span>
-          <span>Est. 2024</span>
-          <span>Buenos Aires, Argentina</span>
-        </div>
-      </div>
+
     </section>
   );
 }
