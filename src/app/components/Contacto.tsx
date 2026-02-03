@@ -1,34 +1,84 @@
 'use client';
 
 import { Send, CheckCircle2 } from "lucide-react";
-import { useState, useRef } from 'react';
+import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import AnimatedBackground from './AnimatedBackground';
 
 export default function Contacto() {
   const [focused, setFocused] = useState<string | null>(null);
-  const [values, setValues] = useState({ name: '', email: '', message: '' });
+  const [values, setValues] = useState({ name: '', email: '', phone: '', message: '' });
+  const [errors, setErrors] = useState({ name: '', email: '', phone: '', message: '' });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
   const [showConfetti, setShowConfetti] = useState(false);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    
+    // Validación frontend
+    const newErrors = { name: '', email: '', phone: '', message: '' };
+    
+    if (!values.name.trim()) {
+      newErrors.name = 'El nombre es requerido';
+    }
+    
+    if (!values.email.trim()) {
+      newErrors.email = 'El email es requerido';
+    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(values.email)) {
+      newErrors.email = 'Email inválido';
+    }
+    
+    if (!values.phone.trim()) {
+      newErrors.phone = 'El teléfono es requerido';
+    } else if (!/^[\d\s\+\-\(\)]+$/.test(values.phone)) {
+      newErrors.phone = 'Teléfono inválido';
+    }
+    
+    if (!values.message.trim()) {
+      newErrors.message = 'El mensaje es requerido';
+    }
+    
+    if (Object.values(newErrors).some(err => err)) {
+      setErrors(newErrors);
+      return;
+    }
+    
+    setErrors({ name: '', email: '', phone: '', message: '' });
     setIsSubmitting(true);
 
-    // Simulate form submission
-    setTimeout(() => {
-      setIsSubmitting(false);
+    try {
+      const response = await fetch('/api/contact', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(values),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || 'Error al enviar el mensaje');
+      }
+
+      // Éxito
       setIsSuccess(true);
       setShowConfetti(true);
 
-      // Reset form after 3 seconds
+      // Reset después de 4 segundos
       setTimeout(() => {
         setIsSuccess(false);
         setShowConfetti(false);
-        setValues({ name: '', email: '', message: '' });
+        setValues({ name: '', email: '', phone: '', message: '' });
       }, 4000);
-    }, 1500);
+
+    } catch (error) {
+      console.error('Error:', error);
+      alert(error instanceof Error ? error.message : 'Hubo un error al enviar el mensaje. Por favor intentá de nuevo.');
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -110,6 +160,7 @@ export default function Contacto() {
                 onChange={v => setValues({ ...values, name: v })}
                 focused={focused === 'name'}
                 setFocused={setFocused}
+                error={errors.name}
               />
               <InputField
                 name="email"
@@ -120,6 +171,18 @@ export default function Contacto() {
                 onChange={v => setValues({ ...values, email: v })}
                 focused={focused === 'email'}
                 setFocused={setFocused}
+                error={errors.email}
+              />
+              <InputField
+                name="phone"
+                type="tel"
+                label="Tu teléfono"
+                placeholder="Teléfono"
+                value={values.phone}
+                onChange={v => setValues({ ...values, phone: v })}
+                focused={focused === 'phone'}
+                setFocused={setFocused}
+                error={errors.phone}
               />
               <InputField
                 name="message"
@@ -129,6 +192,7 @@ export default function Contacto() {
                 onChange={v => setValues({ ...values, message: v })}
                 focused={focused === 'message'}
                 setFocused={setFocused}
+                error={errors.message}
                 isTextArea
               />
 
@@ -169,9 +233,21 @@ interface InputFieldProps {
   type?: string;
   placeholder?: string;
   isTextArea?: boolean;
+  error?: string;
 }
 
-function InputField({ name, label, value, onChange, focused, setFocused, type = "text", placeholder, isTextArea = false }: InputFieldProps) {
+function InputField({ 
+  name, 
+  label, 
+  value, 
+  onChange, 
+  focused, 
+  setFocused, 
+  type = "text", 
+  placeholder, 
+  isTextArea = false,
+  error 
+}: InputFieldProps) {
   const Component = isTextArea ? 'textarea' : 'input';
 
   return (
@@ -183,18 +259,35 @@ function InputField({ name, label, value, onChange, focused, setFocused, type = 
         onChange={(e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => onChange(e.target.value)}
         onFocus={() => setFocused(name)}
         onBlur={() => setFocused(null)}
-        className={`w-full bg-transparent border-b px-2 py-4 text-lg text-white placeholder-transparent focus:outline-none transition-all duration-300 resize-none ${focused ? 'border-cyan-400/60 shadow-lg shadow-cyan-400/20 translate-y-[-2px]' : 'border-cyan-500/20'
-          }`}
+        className={`w-full bg-transparent border-b px-2 py-4 text-lg text-white placeholder-transparent focus:outline-none transition-all duration-300 resize-none ${
+          error 
+            ? 'border-red-500/60' 
+            : focused 
+            ? 'border-cyan-400/60 shadow-lg shadow-cyan-400/20 translate-y-[-2px]' 
+            : 'border-cyan-500/20'
+        }`}
         placeholder={placeholder}
         required
         aria-label={label}
       />
       <label
-        className={`absolute left-2 transition-all duration-300 pointer-events-none ${focused || value ? 'text-xs text-cyan-400 -top-4' : 'text-lg text-white/40 top-4'
-          }`}
+        className={`absolute left-2 transition-all duration-300 pointer-events-none ${
+          focused || value 
+            ? `text-xs -top-4 ${error ? 'text-red-400' : 'text-cyan-400'}` 
+            : 'text-lg text-white/40 top-4'
+        }`}
       >
         {label}
       </label>
+      {error && (
+        <motion.p
+          initial={{ opacity: 0, y: -10 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="absolute -bottom-6 left-2 text-xs text-red-400"
+        >
+          {error}
+        </motion.p>
+      )}
     </div>
   );
 }
@@ -214,7 +307,7 @@ function Confetti() {
 function ConfettiParticle() {
   const colors = ['#06b6d4', '#3b82f6', '#8b5cf6', '#ec4899'];
   const randomColor = colors[Math.floor(Math.random() * colors.length)];
-  const randomX = Math.random() * 800 - 400; // Spread logic
+  const randomX = Math.random() * 800 - 400;
   const randomY = Math.random() * 800 - 400;
 
   return (
