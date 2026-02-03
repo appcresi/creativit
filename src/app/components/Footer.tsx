@@ -174,12 +174,12 @@ export default function Footer() {
             </div>
 
             <a
-              href="mailto:info@creativit.com"
+              href="mailto:appcresi@gmail.com"
               className="group inline-flex items-center gap-2 text-white/60 hover:text-cyan-400 text-sm transition-colors duration-300"
             >
               <Mail className="w-4 h-4 group-hover:scale-110 transition-transform duration-300" />
               <span className="relative">
-                info@creativit.com
+                appcresi@gmail.com
                 <span className="absolute bottom-0 left-0 w-0 h-px bg-cyan-400 group-hover:w-full transition-all duration-300" />
               </span>
             </a>
