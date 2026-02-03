@@ -155,13 +155,13 @@ export default function Footer() {
 
             <div className="flex gap-4 mb-6">
               {[
-                { Icon: Facebook, color: 'blue', delay: 0 },
-                { Icon: Twitter, color: 'cyan', delay: 100 },
-                { Icon: Linkedin, color: 'blue', delay: 200 }
-              ].map(({ Icon, color, delay }, i) => (
+                { Icon: Facebook, color: 'blue', delay: 0, href:"https://www.facebook.com/appcresi" },
+                { Icon: Twitter, color: 'cyan', delay: 100, href:"https://www.x.com/appcresi"  },
+                { Icon: Linkedin, color: 'blue', delay: 200, href:"https://www.linkedin.com/appcresi"  }
+              ].map(({ Icon, color, delay, href }, i) => (
                 <motion.a
                   key={i}
-                  href="#"
+                  href={href}
                   initial={{ opacity: 0, scale: 0 }}
                   whileInView={{ opacity: 1, scale: 1 }}
                   viewport={{ once: true }}
