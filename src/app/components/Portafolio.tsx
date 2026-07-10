@@ -36,42 +36,83 @@ export default function Portafolio() {
     return () => window.removeEventListener('keydown', handleEsc);
   }, []);
 
-  const projects = [
-    {
-      title: "CrESI",
-      description: "Plataforma Educativa con juegos interactivos, recursos descargables.",
-      tags: ["React", "Tailwind"],
-      bgFrom: "from-cyan-400",
-      bgTo: "to-blue-600",
-      border: "cyan",
-      image: "https://images.unsplash.com/photo-1517694712202-14dd9538aa97?w=800&h=600&fit=crop",
-      url: "https://cresi.com.ar", // Reemplaza con tu URL real
-      features: ["Diseño responsive", "Optimización SEO", "Animaciones fluidas"]
-    },
-    {
-      title: "Festivo Eventos",
-      description: "Plataforma de organización de eventos con pagos a través de Mercado Pago.",
-      tags: ["TypeScript", "Mercado Pago"],
-      bgFrom: "from-orange-400",
-      bgTo: "to-red-600",
-      border: "orange",
-      image: "https://images.unsplash.com/photo-1552664730-d307ca884978?w=800&h=600&fit=crop",
-      url: "https://festivoeventos.com.ar", // Reemplaza con tu URL real
-      features: ["Dashboard en tiempo real", "Colaboración en equipo", "Integraciones API"]
-    },
-    {
-      title: "Paola Galante Abogada",
-      description: "Landing Page para estudio jurídico",
-      tags: ["Next.js", "Tailwind"],
-      bgFrom: "from-emerald-400",
-      bgTo: "to-green-600",
-      border: "emerald",
-      image: "https://images.unsplash.com/photo-1499750310107-5fef28a66643?w=800&h=600&fit=crop",
-      url: "https://paolagalanteabogada.com.ar", // Reemplaza con tu URL real
-      features: ["CMS headless", "Comentarios en tiempo real", "Newsletter integrado"]
-    }
-  ];
-
+ const projects = [
+  {
+    title: "FacilMat",
+    description: "Plataforma educativa para el aprendizaje de Matemática con actividades interactivas, desafíos y recursos digitales.",
+    tags: ["Next.js", "Firebase", "Tailwind"],
+    bgFrom: "from-violet-400",
+    bgTo: "to-indigo-600",
+    border: "violet",
+    image: "https://images.unsplash.com/photo-1509228468518-180dd4864904?w=800&h=600&fit=crop",
+    url: "https://facilmat.com.ar",
+    features: [
+      "Actividades interactivas",
+      "Panel de administración",
+      "Experiencia responsive"
+    ]
+  },
+  {
+    title: "Calixto",
+    description: "Tienda online especializada en aceites de oliva, aceitunas y productos gourmet de alta calidad.",
+    tags: ["Next.js", "E-commerce", "Mercado Pago"],
+    bgFrom: "from-lime-400",
+    bgTo: "to-emerald-600",
+    border: "lime",
+    image: "https://images.unsplash.com/photo-1474979266404-7eaacbcd87c5?w=800&h=600&fit=crop",
+    url: "https://calixto.ar",
+    features: [
+      "Catálogo de productos",
+      "Carrito de compras",
+      "Pagos online"
+    ]
+  },
+  {
+    title: "Festivo Eventos",
+    description: "Plataforma de organización de eventos con pagos integrados mediante Mercado Pago.",
+    tags: ["TypeScript", "Mercado Pago"],
+    bgFrom: "from-orange-400",
+    bgTo: "to-red-600",
+    border: "orange",
+    image: "https://images.unsplash.com/photo-1552664730-d307ca884978?w=800&h=600&fit=crop",
+    url: "https://festivoeventos.com.ar",
+    features: [
+      "Dashboard en tiempo real",
+      "Colaboración en equipo",
+      "Integraciones API"
+    ]
+  },
+  {
+    title: "CrESI",
+    description: "Plataforma educativa con juegos interactivos, recursos descargables y herramientas para trabajar la ESI.",
+    tags: ["React", "Tailwind"],
+    bgFrom: "from-cyan-400",
+    bgTo: "to-blue-600",
+    border: "cyan",
+    image: "https://images.unsplash.com/photo-1517694712202-14dd9538aa97?w=800&h=600&fit=crop",
+    url: "https://cresi.com.ar",
+    features: [
+      "Diseño responsive",
+      "Optimización SEO",
+      "Animaciones fluidas"
+    ]
+  },
+  {
+    title: "Paola Galante Abogada",
+    description: "Sitio web profesional para estudio jurídico con diseño moderno y enfoque en la captación de clientes.",
+    tags: ["Next.js", "Tailwind"],
+    bgFrom: "from-emerald-400",
+    bgTo: "to-green-600",
+    border: "emerald",
+    image: "https://images.unsplash.com/photo-1499750310107-5fef28a66643?w=800&h=600&fit=crop",
+    url: "https://paolagalanteabogada.com.ar",
+    features: [
+      "CMS Headless",
+      "Optimización SEO",
+      "Formulario de contacto"
+    ]
+  }
+];
   const handlePrevProject = () => {
     if (selectedProject === null) return;
     setIframeError(false);
