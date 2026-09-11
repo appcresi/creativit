@@ -1,5 +1,6 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
+import { MouseParallaxProvider } from "./components/MouseParallax";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -13,10 +14,11 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL("https://creativit.com.ar"),
   title: "Creativit - Diseño Web y Soluciones Digitales",
   description: "Transformamos ideas en experiencias digitales de alto impacto. Diseño web, desarrollo y branding para potenciar tu negocio.",
   keywords: ["diseño web", "desarrollo web", "marketing digital", "branding", "seo", "argentina", "buenos aires", "creativit"],
-  authors: [{ name: "Synera Team" }],
+  authors: [{ name: "Creativit" }],
   creator: "Creativit",
   openGraph: {
     type: "website",
@@ -31,15 +33,16 @@ export const metadata: Metadata = {
     title: "Creativit - Diseño Web y Soluciones Digitales",
     description: "Transformamos ideas en experiencias digitales de alto impacto.",
   },
-  viewport: {
-    width: "device-width",
-    initialScale: 1,
-    maximumScale: 5,
-  },
   robots: {
     index: true,
     follow: true,
   },
+};
+
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  maximumScale: 5,
 };
 
 export default function RootLayout({
@@ -52,7 +55,7 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased bg-black text-white selection:bg-cyan-500/30 selection:text-cyan-200`}
       >
-        {children}
+        <MouseParallaxProvider>{children}</MouseParallaxProvider>
       </body>
     </html>
   );

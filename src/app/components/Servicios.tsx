@@ -1,7 +1,8 @@
 'use client';
 
-import { Rocket, Building2, ShoppingCart, Zap, ArrowUpRight } from 'lucide-react';
-import { motion, useMotionValue, useSpring, useTransform } from 'framer-motion';
+import { Rocket, Building2, ShoppingCart, Zap, ArrowUpRight, type LucideIcon } from 'lucide-react';
+import type { Variants } from 'framer-motion';
+import { motion, useMotionValue, useSpring } from 'framer-motion';
 import { useRef } from 'react';
 import AnimatedBackground from './AnimatedBackground';
 
@@ -16,7 +17,7 @@ export default function Servicios() {
     }
   };
 
-  const itemVariants = {
+  const itemVariants: Variants = {
     hidden: { opacity: 0, y: 30 },
     visible: {
       opacity: 1,
@@ -123,7 +124,7 @@ export default function Servicios() {
   );
 }
 
-function ServiceCard({ icon: Icon, title, description, color, gradient, variants }: { icon: any, title: string, description: string, color: string, gradient: string, variants: any }) {
+function ServiceCard({ icon: Icon, title, description, color, gradient, variants }: { icon: LucideIcon, title: string, description: string, color: string, gradient: string, variants: Variants }) {
   const ref = useRef<HTMLDivElement>(null);
 
   const x = useMotionValue(0);
@@ -158,7 +159,12 @@ function ServiceCard({ icon: Icon, title, description, color, gradient, variants
     emerald: "border-emerald-500/30 hover:border-emerald-500/60 shadow-emerald-500/10 hover:shadow-emerald-500/30",
   }[color];
 
-  const shadowColorClass = `shadow-${color}-500/50`;
+  const shadowColorClass = {
+    cyan: "shadow-cyan-500/50",
+    purple: "shadow-purple-500/50",
+    orange: "shadow-orange-500/50",
+    emerald: "shadow-emerald-500/50",
+  }[color] ?? "shadow-cyan-500/50";
 
   return (
     <motion.div

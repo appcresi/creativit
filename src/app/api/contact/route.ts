@@ -1,18 +1,49 @@
 import { NextResponse } from 'next/server';
 import nodemailer from 'nodemailer';
 
+const RATE_LIMIT_WINDOW_MS = 60_000;
+const RATE_LIMIT_MAX_REQUESTS = 3;
+const rateLimitStore = new Map<string, { count: number; windowStart: number }>();
+
+function isRateLimited(ip: string): boolean {
+  const now = Date.now();
+  const entry = rateLimitStore.get(ip);
+
+  if (!entry || now - entry.windowStart > RATE_LIMIT_WINDOW_MS) {
+    rateLimitStore.set(ip, { count: 1, windowStart: now });
+    return false;
+  }
+
+  entry.count += 1;
+  return entry.count > RATE_LIMIT_MAX_REQUESTS;
+}
+
 export async function POST(request: Request) {
-  console.log('=== API Contact llamada ===');
-  
   try {
+    const ip = request.headers.get('x-forwarded-for')?.split(',')[0].trim()
+      || request.headers.get('x-real-ip')
+      || 'unknown';
+
+    if (isRateLimited(ip)) {
+      return NextResponse.json(
+        { error: 'Demasiados intentos. Por favor esperá un minuto antes de volver a intentar.' },
+        { status: 429 }
+      );
+    }
+
     const body = await request.json();
-    console.log('Body recibido:', body);
-    
-    const { name, email, phone, message } = body;
+    const { name, email, phone, message, website } = body;
+
+    // Honeypot: campo oculto que solo un bot completaría
+    if (website) {
+      return NextResponse.json(
+        { success: true, message: 'Mensaje enviado correctamente' },
+        { status: 200 }
+      );
+    }
 
     // Validación
     if (!name || !email || !phone || !message) {
-      console.log('Validación falló: campos faltantes');
       return NextResponse.json(
         { error: 'Todos los campos son requeridos' },
         { status: 400 }
@@ -22,7 +53,6 @@ export async function POST(request: Request) {
     // Validar email
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(email)) {
-      console.log('Validación falló: email inválido');
       return NextResponse.json(
         { error: 'Email inválido' },
         { status: 400 }
@@ -32,7 +62,6 @@ export async function POST(request: Request) {
     // Validar teléfono (números, espacios, +, -, paréntesis)
     const phoneRegex = /^[\d\s\+\-\(\)]+$/;
     if (!phoneRegex.test(phone)) {
-      console.log('Validación falló: teléfono inválido');
       return NextResponse.json(
         { error: 'Teléfono inválido' },
         { status: 400 }
@@ -41,15 +70,13 @@ export async function POST(request: Request) {
 
     // Verificar variables de entorno
     if (!process.env.GMAIL_USER || !process.env.GMAIL_APP_PASSWORD) {
-      console.error('ERROR: Variables de entorno no configuradas');
+      console.error('Contact API: variables de entorno GMAIL_USER/GMAIL_APP_PASSWORD no configuradas');
       return NextResponse.json(
         { error: 'Error de configuración del servidor' },
         { status: 500 }
       );
     }
 
-    console.log('Creando transporter...');
-    
     // Configurar transporter
     const transporter = nodemailer.createTransport({
       service: 'gmail',
@@ -59,12 +86,8 @@ export async function POST(request: Request) {
       },
     });
 
-    console.log('Verificando conexión...');
-    await transporter.verify();
-    console.log('Conexión verificada. Enviando email...');
-
     // Enviar email
-    const info = await transporter.sendMail({
+    await transporter.sendMail({
       from: process.env.GMAIL_USER,
       to: process.env.GMAIL_USER,
       replyTo: email,
@@ -127,21 +150,16 @@ ${message}
       `,
     });
 
-    console.log('Email enviado exitosamente:', info.messageId);
-
     return NextResponse.json(
       { success: true, message: 'Mensaje enviado correctamente' },
       { status: 200 }
     );
 
   } catch (error) {
-    console.error('❌ ERROR COMPLETO:', error);
-    
+    console.error('Contact API error:', error);
+
     return NextResponse.json(
-      { 
-        error: 'Error al enviar el mensaje. Por favor intentá de nuevo.',
-        details: error instanceof Error ? error.message : String(error)
-      },
+      { error: 'Error al enviar el mensaje. Por favor intentá de nuevo.' },
       { status: 500 }
     );
   }

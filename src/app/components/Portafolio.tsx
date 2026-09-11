@@ -1,15 +1,51 @@
 'use client';
 
-import { ArrowUpRight, X, ChevronLeft, ChevronRight, ExternalLink } from 'lucide-react';
+import { ArrowUpRight, X, ChevronLeft, ChevronRight, ExternalLink, Globe } from 'lucide-react';
 import { motion, useMotionValue, useSpring, AnimatePresence } from 'framer-motion';
 import { useRef, useState, useEffect } from 'react';
+import Image from 'next/image';
 import AnimatedBackground from './AnimatedBackground';
+
+interface Project {
+  title: string;
+  description: string;
+  tags: string[];
+  bgFrom: string;
+  bgTo: string;
+  border: string;
+  image: string | null;
+  url: string;
+  features: string[];
+  embeddable: boolean;
+}
+
+function ProjectThumbnail({ project, className }: { project: Project; className?: string }) {
+  if (project.image) {
+    return (
+      <Image
+        src={project.image}
+        alt={project.title}
+        fill
+        sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+        className={className}
+      />
+    );
+  }
+
+  return (
+    <div className={`flex items-center justify-center bg-gradient-to-br ${project.bgFrom} ${project.bgTo} ${className}`}>
+      <div className="flex flex-col items-center gap-3 text-white/90">
+        <Globe className="w-10 h-10" />
+        <span className="text-lg font-bold tracking-tight">{project.title}</span>
+      </div>
+    </div>
+  );
+}
 
 export default function Portafolio() {
   const [cursorVisible, setCursorVisible] = useState(false);
   const [selectedProject, setSelectedProject] = useState<number | null>(null);
-  const [iframeError, setIframeError] = useState(false);
-  
+
   const cursorX = useMotionValue(-100);
   const cursorY = useMotionValue(-100);
 
@@ -44,13 +80,14 @@ export default function Portafolio() {
     bgFrom: "from-violet-400",
     bgTo: "to-indigo-600",
     border: "violet",
-    image: "https://images.unsplash.com/photo-1509228468518-180dd4864904?w=800&h=600&fit=crop",
+    image: null,
     url: "https://facilmat.com.ar",
     features: [
       "Actividades interactivas",
       "Panel de administración",
       "Experiencia responsive"
-    ]
+    ],
+    embeddable: true
   },
   {
     title: "Calixto",
@@ -59,13 +96,14 @@ export default function Portafolio() {
     bgFrom: "from-lime-400",
     bgTo: "to-emerald-600",
     border: "lime",
-    image: "https://images.unsplash.com/photo-1474979266404-7eaacbcd87c5?w=800&h=600&fit=crop",
+    image: "https://www.calixto.ar/og-default.png",
     url: "https://calixto.ar",
     features: [
       "Catálogo de productos",
       "Carrito de compras",
       "Pagos online"
-    ]
+    ],
+    embeddable: true
   },
   {
     title: "Festivo Eventos",
@@ -74,13 +112,14 @@ export default function Portafolio() {
     bgFrom: "from-orange-400",
     bgTo: "to-red-600",
     border: "orange",
-    image: "https://images.unsplash.com/photo-1552664730-d307ca884978?w=800&h=600&fit=crop",
+    image: null,
     url: "https://festivoeventos.com.ar",
     features: [
       "Dashboard en tiempo real",
       "Colaboración en equipo",
       "Integraciones API"
-    ]
+    ],
+    embeddable: true
   },
   {
     title: "CrESI",
@@ -89,13 +128,16 @@ export default function Portafolio() {
     bgFrom: "from-cyan-400",
     bgTo: "to-blue-600",
     border: "cyan",
-    image: "https://images.unsplash.com/photo-1517694712202-14dd9538aa97?w=800&h=600&fit=crop",
+    image: "https://www.cresi.com.ar/opengraph-image.jpg",
     url: "https://cresi.com.ar",
     features: [
       "Diseño responsive",
       "Optimización SEO",
       "Animaciones fluidas"
-    ]
+    ],
+    // El sitio envía "frame-ancestors 'self'" y X-Frame-Options: SAMEORIGIN,
+    // así que rechaza ser embebido en un iframe ajeno. Verificado con curl -I.
+    embeddable: false
   },
   {
     title: "Paola Galante Abogada",
@@ -104,24 +146,23 @@ export default function Portafolio() {
     bgFrom: "from-emerald-400",
     bgTo: "to-green-600",
     border: "emerald",
-    image: "https://images.unsplash.com/photo-1499750310107-5fef28a66643?w=800&h=600&fit=crop",
+    image: null,
     url: "https://paolagalanteabogada.com.ar",
     features: [
       "CMS Headless",
       "Optimización SEO",
       "Formulario de contacto"
-    ]
+    ],
+    embeddable: true
   }
 ];
   const handlePrevProject = () => {
     if (selectedProject === null) return;
-    setIframeError(false);
     setSelectedProject(selectedProject === 0 ? projects.length - 1 : selectedProject - 1);
   };
 
   const handleNextProject = () => {
     if (selectedProject === null) return;
-    setIframeError(false);
     setSelectedProject(selectedProject === projects.length - 1 ? 0 : selectedProject + 1);
   };
 
@@ -293,75 +334,7 @@ export default function Portafolio() {
 
               {/* Modal Content */}
               <div className="relative h-[calc(100%-88px)] overflow-hidden">
-                {!iframeError ? (
-                  <div className="relative w-full h-full">
-                    {/* Loading Overlay */}
-                    <div className="absolute inset-0 flex items-center justify-center bg-neutral-900">
-                      <div className="text-center">
-                        <div className={`w-16 h-16 mx-auto mb-4 rounded-full border-4 border-t-transparent animate-spin bg-gradient-to-r ${currentProject.bgFrom} ${currentProject.bgTo}`} 
-                             style={{ WebkitMaskImage: 'linear-gradient(transparent 50%, black 50%)' }}
-                        />
-                        <p className="text-white/60">Cargando vista previa...</p>
-                      </div>
-                    </div>
-
-                    {/* Iframe */}
-                    <iframe
-                      src={currentProject.url}
-                      className="absolute inset-0 w-full h-full bg-white"
-                      title={currentProject.title}
-                      onError={() => setIframeError(true)}
-                      sandbox="allow-scripts allow-same-origin allow-forms allow-popups"
-                    />
-                  </div>
-                ) : (
-                  // Fallback when iframe fails
-                  <div className="flex items-center justify-center h-full p-12">
-                    <div className="text-center max-w-2xl">
-                      <div className="relative w-full aspect-video mb-8 rounded-2xl overflow-hidden border border-white/10">
-                        <img
-                          src={currentProject.image}
-                          alt={currentProject.title}
-                          className="w-full h-full object-cover"
-                        />
-                        <div className={`absolute inset-0 bg-gradient-to-t ${currentProject.bgFrom} ${currentProject.bgTo} opacity-20`} />
-                      </div>
-
-                      <h4 className="text-2xl font-bold text-white mb-4">
-                        Vista previa no disponible
-                      </h4>
-                      <p className="text-white/60 mb-8">
-                        Este proyecto no puede mostrarse en el modal por restricciones de seguridad.
-                        Podés ver el proyecto completo en una nueva ventana.
-                      </p>
-
-                      {/* Features */}
-                      <div className="mb-8">
-                        <h5 className="text-sm font-semibold text-white/80 mb-3">Características destacadas:</h5>
-                        <div className="flex flex-wrap justify-center gap-3">
-                          {currentProject.features.map((feature, i) => (
-                            <span
-                              key={i}
-                              className="px-4 py-2 rounded-full bg-white/5 border border-white/10 text-sm text-white/70"
-                            >
-                              {feature}
-                            </span>
-                          ))}
-                        </div>
-                      </div>
-
-                      <a
-                        href={currentProject.url}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className={`inline-flex items-center gap-2 px-8 py-4 rounded-xl bg-gradient-to-r ${currentProject.bgFrom} ${currentProject.bgTo} text-white font-bold shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105`}
-                      >
-                        <ExternalLink className="w-5 h-5" />
-                        Ver proyecto completo
-                      </a>
-                    </div>
-                  </div>
-                )}
+                <ProjectPreview key={currentProject.url} project={currentProject} />
               </div>
             </motion.div>
           </motion.div>
@@ -371,14 +344,110 @@ export default function Portafolio() {
   );
 }
 
-function ProjectCard({ 
+function ProjectPreview({ project }: { project: Project }) {
+  const [iframeError, setIframeError] = useState(false);
+  const [iframeLoaded, setIframeLoaded] = useState(false);
+
+  // Qué proyectos pueden embeberse se decide con el flag `embeddable` (chequeado
+  // manualmente contra X-Frame-Options/CSP de cada sitio): un bloqueo por esas
+  // cabeceras sigue disparando `onLoad` del iframe igual que una carga exitosa,
+  // así que no se puede distinguir de forma confiable en runtime. Este timeout
+  // solo cubre fallas reales de red/DNS en los sitios marcados como embeddable.
+  useEffect(() => {
+    const timeout = setTimeout(() => {
+      setIframeLoaded(loaded => {
+        if (!loaded) setIframeError(true);
+        return loaded;
+      });
+    }, 4500);
+
+    return () => clearTimeout(timeout);
+  }, []);
+
+  if (!project.embeddable || iframeError) {
+    return (
+      <div className="flex items-center justify-center h-full p-12 overflow-y-auto">
+        <div className="text-center max-w-2xl">
+          <div className="relative w-full aspect-video mb-8 rounded-2xl overflow-hidden border border-white/10">
+            <ProjectThumbnail project={project} className="w-full h-full object-cover" />
+            <div className={`absolute inset-0 bg-gradient-to-t ${project.bgFrom} ${project.bgTo} opacity-20`} />
+          </div>
+
+          <h4 className="text-2xl font-bold text-white mb-4">
+            Vista previa no disponible
+          </h4>
+          <p className="text-white/60 mb-8">
+            Este proyecto no puede mostrarse en el modal por restricciones de seguridad.
+            Podés ver el proyecto completo en una nueva ventana.
+          </p>
+
+          {/* Features */}
+          <div className="mb-8">
+            <h5 className="text-sm font-semibold text-white/80 mb-3">Características destacadas:</h5>
+            <div className="flex flex-wrap justify-center gap-3">
+              {project.features.map((feature, i) => (
+                <span
+                  key={i}
+                  className="px-4 py-2 rounded-full bg-white/5 border border-white/10 text-sm text-white/70"
+                >
+                  {feature}
+                </span>
+              ))}
+            </div>
+          </div>
+
+          <a
+            href={project.url}
+            target="_blank"
+            rel="noopener noreferrer"
+            className={`inline-flex items-center gap-2 px-8 py-4 rounded-xl bg-gradient-to-r ${project.bgFrom} ${project.bgTo} text-white font-bold shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105`}
+          >
+            <ExternalLink className="w-5 h-5" />
+            Ver proyecto completo
+          </a>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="relative w-full h-full">
+      {/* Loading Overlay */}
+      {!iframeLoaded && (
+        <div className="absolute inset-0 flex items-center justify-center bg-neutral-900 z-10">
+          <div className="text-center">
+            <div className={`w-16 h-16 mx-auto mb-4 rounded-full border-4 border-t-transparent animate-spin bg-gradient-to-r ${project.bgFrom} ${project.bgTo}`}
+                 style={{ WebkitMaskImage: 'linear-gradient(transparent 50%, black 50%)' }}
+            />
+            <p className="text-white/60">Cargando vista previa...</p>
+          </div>
+        </div>
+      )}
+
+      {/* Iframe */}
+      <iframe
+        src={project.url}
+        className="absolute inset-0 w-full h-full bg-white"
+        title={project.title}
+        onLoad={() => setIframeLoaded(true)}
+        onError={() => setIframeError(true)}
+        // Los proyectos embebidos son sitios propios del estudio (contenido de confianza,
+        // no de terceros): sin allow-same-origin, apps Next.js con cookies/RSC (ej. Paola
+        // Galante Abogada) rompen su hidratación dentro del iframe.
+        sandbox="allow-scripts allow-same-origin allow-forms allow-popups"
+      />
+    </div>
+  );
+}
+
+function ProjectCard({
   project, 
   index, 
   setCursorVisible,
   onClick 
-}: { 
-  project: any, 
-  index: number, 
+}: {
+  project: Project,
+  index: number,
   setCursorVisible: (v: boolean) => void,
   onClick: () => void
 }) {
@@ -446,9 +515,8 @@ function ProjectCard({
 
         {/* Image Container */}
         <div className="relative h-64 overflow-hidden">
-          <img
-            src={project.image}
-            alt={project.title}
+          <ProjectThumbnail
+            project={project}
             className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
           />
           <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition duration-500 flex items-end z-20">

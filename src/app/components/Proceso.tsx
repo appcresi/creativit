@@ -5,6 +5,38 @@ import { motion } from 'framer-motion';
 import AnimatedBackground from './AnimatedBackground';
 
 export default function Proceso() {
+  const STEP_STYLES: Record<string, {
+    shadow: string;
+    shadowHover: string;
+    lineToLeft: string;
+    lineToRight: string;
+  }> = {
+    cyan: {
+      shadow: "shadow-cyan-500/50",
+      shadowHover: "hover:shadow-cyan-500/70",
+      lineToLeft: "from-cyan-500/50 to-transparent",
+      lineToRight: "from-cyan-500/50 to-transparent",
+    },
+    purple: {
+      shadow: "shadow-purple-500/50",
+      shadowHover: "hover:shadow-purple-500/70",
+      lineToLeft: "from-purple-500/50 to-transparent",
+      lineToRight: "from-purple-500/50 to-transparent",
+    },
+    orange: {
+      shadow: "shadow-orange-500/50",
+      shadowHover: "hover:shadow-orange-500/70",
+      lineToLeft: "from-orange-500/50 to-transparent",
+      lineToRight: "from-orange-500/50 to-transparent",
+    },
+    emerald: {
+      shadow: "shadow-emerald-500/50",
+      shadowHover: "hover:shadow-emerald-500/70",
+      lineToLeft: "from-emerald-500/50 to-transparent",
+      lineToRight: "from-emerald-500/50 to-transparent",
+    },
+  };
+
   const steps = [
     {
       number: 1,
@@ -105,6 +137,7 @@ export default function Proceso() {
             {steps.map((step, index) => {
               const Icon = step.icon;
               const isLeft = step.side === "left";
+              const stepStyle = STEP_STYLES[step.color];
 
               return (
                 <motion.div
@@ -119,7 +152,7 @@ export default function Proceso() {
                   <div className={`${isLeft ? 'md:text-right order-2 md:order-1' : 'order-2'}`}>
                     <div className={`inline-block ${isLeft ? 'md:block' : ''}`}>
                       <div className={`inline-flex items-center gap-3 mb-4 ${isLeft ? 'md:justify-end' : ''}`}>
-                        <div className={`w-8 h-8 rounded-full bg-gradient-to-br ${step.gradient} flex items-center justify-center text-white font-bold text-sm shadow-lg shadow-${step.color}-500/50`}>
+                        <div className={`w-8 h-8 rounded-full bg-gradient-to-br ${step.gradient} flex items-center justify-center text-white font-bold text-sm shadow-lg ${stepStyle.shadow}`}>
                           {step.number}
                         </div>
                         <h3 className="text-2xl font-bold text-white">
@@ -142,14 +175,14 @@ export default function Proceso() {
                             whileInView={{ width: "8rem" }}
                             viewport={{ once: true }}
                             transition={{ duration: 0.8, delay: 0.5 }}
-                            className={`h-px bg-gradient-to-l from-${step.color}-500/50 to-transparent`}
+                            className={`h-px bg-gradient-to-l ${stepStyle.lineToLeft}`}
                           />
                         </div>
                       )}
 
                       <motion.div
                         whileHover={{ scale: 1.1, rotate: 6 }}
-                        className={`group relative w-16 h-16 rounded-2xl bg-gradient-to-br ${step.gradient} flex items-center justify-center shadow-lg shadow-${step.color}-500/50 hover:shadow-${step.color}-500/70 relative z-10`}
+                        className={`group relative w-16 h-16 rounded-2xl bg-gradient-to-br ${step.gradient} flex items-center justify-center shadow-lg ${stepStyle.shadow} ${stepStyle.shadowHover} relative z-10`}
                       >
                         {/* Pulse ring */}
                         <div className={`absolute inset-0 rounded-2xl bg-gradient-to-br ${step.gradient} opacity-0 group-hover:opacity-100 animate-ping`} />
@@ -163,7 +196,7 @@ export default function Proceso() {
                             whileInView={{ width: "8rem" }}
                             viewport={{ once: true }}
                             transition={{ duration: 0.8, delay: 0.5 }}
-                            className={`h-px bg-gradient-to-r from-${step.color}-500/50 to-transparent`}
+                            className={`h-px bg-gradient-to-r ${stepStyle.lineToRight}`}
                           />
                         </div>
                       )}

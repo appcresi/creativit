@@ -7,7 +7,7 @@ import AnimatedBackground from './AnimatedBackground';
 
 export default function Contacto() {
   const [focused, setFocused] = useState<string | null>(null);
-  const [values, setValues] = useState({ name: '', email: '', phone: '', message: '' });
+  const [values, setValues] = useState({ name: '', email: '', phone: '', message: '', website: '' });
   const [errors, setErrors] = useState({ name: '', email: '', phone: '', message: '' });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
@@ -45,6 +45,19 @@ export default function Contacto() {
     }
     
     setErrors({ name: '', email: '', phone: '', message: '' });
+
+    // Honeypot: si un bot completó este campo oculto, simulamos éxito sin enviar nada
+    if (values.website) {
+      setIsSuccess(true);
+      setShowConfetti(true);
+      setTimeout(() => {
+        setIsSuccess(false);
+        setShowConfetti(false);
+        setValues({ name: '', email: '', phone: '', message: '', website: '' });
+      }, 4000);
+      return;
+    }
+
     setIsSubmitting(true);
 
     try {
@@ -70,7 +83,7 @@ export default function Contacto() {
       setTimeout(() => {
         setIsSuccess(false);
         setShowConfetti(false);
-        setValues({ name: '', email: '', phone: '', message: '' });
+        setValues({ name: '', email: '', phone: '', message: '', website: '' });
       }, 4000);
 
     } catch (error) {
@@ -152,6 +165,17 @@ export default function Contacto() {
             </AnimatePresence>
 
             <form onSubmit={handleSubmit} className="space-y-8" noValidate>
+              {/* Honeypot anti-spam: oculto para personas, visible para bots */}
+              <input
+                type="text"
+                name="website"
+                value={values.website}
+                onChange={e => setValues({ ...values, website: e.target.value })}
+                tabIndex={-1}
+                autoComplete="off"
+                aria-hidden="true"
+                className="absolute left-[-9999px] top-auto w-px h-px overflow-hidden"
+              />
               <InputField
                 name="name"
                 label="¿Cómo te llamás?"
@@ -305,24 +329,32 @@ function Confetti() {
 }
 
 function ConfettiParticle() {
-  const colors = ['#06b6d4', '#3b82f6', '#8b5cf6', '#ec4899'];
-  const randomColor = colors[Math.floor(Math.random() * colors.length)];
-  const randomX = Math.random() * 800 - 400;
-  const randomY = Math.random() * 800 - 400;
+  // Se calculan una sola vez por partícula (initializer perezoso de useState),
+  // en vez de en el cuerpo del render, para no violar la regla de pureza de React.
+  const [{ color, x, y, rotate, duration }] = useState(() => {
+    const colors = ['#06b6d4', '#3b82f6', '#8b5cf6', '#ec4899'];
+    return {
+      color: colors[Math.floor(Math.random() * colors.length)],
+      x: Math.random() * 800 - 400,
+      y: Math.random() * 800 - 400,
+      rotate: Math.random() * 360,
+      duration: 1 + Math.random(),
+    };
+  });
 
   return (
     <motion.div
       initial={{ x: 0, y: 0, scale: 1, opacity: 1 }}
       animate={{
-        x: randomX,
-        y: randomY,
-        rotate: Math.random() * 360,
+        x,
+        y,
+        rotate,
         opacity: 0,
         scale: 0
       }}
-      transition={{ duration: 1 + Math.random(), ease: "easeOut" }}
+      transition={{ duration, ease: "easeOut" }}
       className="absolute w-3 h-3 rounded-full"
-      style={{ backgroundColor: randomColor }}
+      style={{ backgroundColor: color }}
     />
   );
 }

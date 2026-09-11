@@ -89,7 +89,7 @@ export default function Footer() {
             </div>
 
             <p className="text-white/60 text-sm leading-relaxed">
-              No hacemos "páginas web".
+              No hacemos &ldquo;páginas web&rdquo;.
               Creamos experiencias digitales que conectan con personas reales.
             </p>
           </motion.div>
@@ -155,18 +155,32 @@ export default function Footer() {
 
             <div className="flex gap-4 mb-6">
               {[
-                { Icon: Facebook, color: 'blue', delay: 0, href:"https://www.facebook.com/appcresi" },
-                { Icon: Twitter, color: 'cyan', delay: 100, href:"https://www.x.com/appcresi"  },
-                { Icon: Linkedin, color: 'blue', delay: 200, href:"https://www.linkedin.com/appcresi"  }
-              ].map(({ Icon, color, delay, href }, i) => (
+                {
+                  Icon: Facebook,
+                  href: "https://www.facebook.com/appcresi",
+                  className: "w-10 h-10 rounded-xl bg-white/5 border border-blue-500/30 hover:bg-gradient-to-br hover:from-blue-500 hover:to-blue-600 hover:border-blue-400/50 flex items-center justify-center shadow-lg shadow-blue-500/10 hover:shadow-blue-500/40 transition-all duration-300 group hover:scale-110 hover:rotate-12",
+                },
+                {
+                  Icon: Twitter,
+                  href: "https://www.x.com/appcresi",
+                  className: "w-10 h-10 rounded-xl bg-white/5 border border-cyan-500/30 hover:bg-gradient-to-br hover:from-cyan-500 hover:to-cyan-600 hover:border-cyan-400/50 flex items-center justify-center shadow-lg shadow-cyan-500/10 hover:shadow-cyan-500/40 transition-all duration-300 group hover:scale-110 hover:rotate-12",
+                },
+                {
+                  Icon: Linkedin,
+                  href: "https://www.linkedin.com/company/appcresi",
+                  className: "w-10 h-10 rounded-xl bg-white/5 border border-blue-500/30 hover:bg-gradient-to-br hover:from-blue-500 hover:to-blue-600 hover:border-blue-400/50 flex items-center justify-center shadow-lg shadow-blue-500/10 hover:shadow-blue-500/40 transition-all duration-300 group hover:scale-110 hover:rotate-12",
+                },
+              ].map(({ Icon, href, className }, i) => (
                 <motion.a
                   key={i}
                   href={href}
+                  target="_blank"
+                  rel="noopener noreferrer"
                   initial={{ opacity: 0, scale: 0 }}
                   whileInView={{ opacity: 1, scale: 1 }}
                   viewport={{ once: true }}
                   transition={{ delay: 0.6 + (i * 0.1), duration: 0.4 }}
-                  className={`w-10 h-10 rounded-xl bg-white/5 border border-${color}-500/30 hover:bg-gradient-to-br hover:from-${color}-500 hover:to-${color}-600 hover:border-${color}-400/50 flex items-center justify-center shadow-lg shadow-${color}-500/10 hover:shadow-${color}-500/40 transition-all duration-300 group hover:scale-110 hover:rotate-12`}
+                  className={className}
                 >
                   <Icon className="w-5 h-5 text-white/60 group-hover:text-white group-hover:rotate-[-12deg] transition-all duration-300" />
                 </motion.a>

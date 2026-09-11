@@ -1,8 +1,9 @@
 'use client';
 
 import { ArrowUpRight } from 'lucide-react';
-import { useEffect, useRef, useState } from 'react';
-import { motion, useScroll, useTransform, useSpring, useMotionValue, useMotionTemplate, animate } from 'framer-motion';
+import { useEffect, useRef } from 'react';
+import { motion, useTransform, useSpring, useMotionValue, animate } from 'framer-motion';
+import { useMouseParallax } from './MouseParallax';
 
 function Counter({ from, to, duration = 2, suffix = "" }: { from: number; to: number; duration?: number; suffix?: string }) {
   const nodeRef = useRef<HTMLDivElement>(null);
@@ -25,8 +26,7 @@ function Counter({ from, to, duration = 2, suffix = "" }: { from: number; to: nu
 }
 
 export default function Hero() {
-  const mouseX = useMotionValue(0);
-  const mouseY = useMotionValue(0);
+  const { mouseX, mouseY } = useMouseParallax();
 
   // Smooth mouse movement for background effects
   const smoothX = useSpring(mouseX, { stiffness: 50, damping: 20 });
@@ -36,16 +36,6 @@ export default function Hero() {
   const backgroundY = useTransform(smoothY, [-1000, 1000], [-20, 20]);
   const backgroundXInverse = useTransform(smoothX, [-1000, 1000], [20, -20]);
   const backgroundYInverse = useTransform(smoothY, [-1000, 1000], [20, -20]);
-
-  useEffect(() => {
-    const handleMouseMove = (e: MouseEvent) => {
-      mouseX.set(e.clientX - window.innerWidth / 2);
-      mouseY.set(e.clientY - window.innerHeight / 2);
-    };
-
-    window.addEventListener('mousemove', handleMouseMove);
-    return () => window.removeEventListener('mousemove', handleMouseMove);
-  }, [mouseX, mouseY]);
 
   return (
     <section id="inicio" className="relative min-h-screen pt-20 overflow-hidden bg-[#0a0f1a]">

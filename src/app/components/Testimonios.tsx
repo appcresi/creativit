@@ -5,8 +5,17 @@ import { motion, useMotionValue, useSpring } from 'framer-motion';
 import { useRef } from 'react';
 import AnimatedBackground from './AnimatedBackground';
 
+interface Testimonial {
+  name: string;
+  role: string;
+  initials: string;
+  text: string;
+  color: string;
+  gradient: string;
+}
+
 export default function Testimonios() {
-  const testimonials = [
+  const testimonials: Testimonial[] = [
     {
       name: "Paola Galante",
       role: "Abogada",
@@ -93,7 +102,7 @@ export default function Testimonios() {
   );
 }
 
-function TestimonialCard({ testimonial, index }: { testimonial: any, index: number }) {
+function TestimonialCard({ testimonial, index }: { testimonial: Testimonial, index: number }) {
   const x = useMotionValue(0);
   const y = useMotionValue(0);
   const rotateX = useSpring(x, { stiffness: 100, damping: 10 });
